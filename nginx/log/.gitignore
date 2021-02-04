@@ -1,0 +1,6 @@
+.idea
+conf.yaml
+mysql/data/*
+nginx/log/*
+!.gitkeep
+go.sum

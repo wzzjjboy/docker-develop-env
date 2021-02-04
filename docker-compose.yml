@@ -1,0 +1,163 @@
+version: '3'
+networks:  
+  backend:
+    driver: bridge
+services:
+  hyperf: 
+    build:
+      context: ./hyperf
+      args:
+        - no_proxy
+    volumes:
+      - D:/Workspace/PhpstormProjects:/mnt/d/htdocs
+    ports:
+      - "8110:9502"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+  swoft: 
+    build:
+      context: ./swoft
+      args:
+        - INSTALL_AMQP=true
+        - CHANGE_SOURCE=true
+    volumes:
+      - D:/Workspace/PhpstormProjects:/var/www
+    ports:
+      - "8120:9501"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+#  msf:
+#    build:
+#      context: ./msf
+#      args:
+#        - INSTALL_AMQP=true
+#    volumes:
+#      - D:/Workspace/PhpstormProjects:/home/worker
+#    ports:
+#      - "8083:22"
+#      - "8084:80"
+#      - "8085:443"
+#    tty: true
+#    environment:
+#      - ENV=test
+#    networks:
+#      - backend
+  msf:
+    build:
+      context: ./msf2
+      args:
+        - CHANGE_SOURCE=true
+        - INSTALL_XSL=true
+        - INSTALL_PHPREDIS=true
+        - INSTALL_SWOOLE=true
+        - INSTALL_MONGO=true
+        - INSTALL_AMQP=true
+        - INSTALL_PCNTL=true
+        - INSTALL_MEMCACHED=true
+        - INSTALL_MYSQLI=true
+        - INSTALL_IMAGEMAGICK=true
+        - INSTALL_IMAP=true
+        - INSTALL_YAML=true
+        - INSTALL_MYSQL_CLIENT=true
+        - INSTALL_PING=true
+        - INSTALL_YAC=true
+        - INSTALL_INOTIFY=true
+    volumes:
+      - D:/Workspace/PhpstormProjects:/var/www
+    ports:
+      - "8130:22"
+      - "8131:80"
+      - "8132:443"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+  yii2: 
+    build:
+      context: ./yii2
+      args:
+        - no_proxy
+    volumes:
+      - D:/Workspace/PhpstormProjects:/mnt/d/htdocs
+    ports:
+      - "8140:9501"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+  laravel: 
+    build:
+      context: ./laravel
+      args:
+        - no_proxy
+    volumes:
+      - D:/Workspace/PhpstormProjects:/mnt/d/htdocs
+    ports:
+      - "8150:9501"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+  nginx: 
+    build:
+      context: ./nginx
+      args:
+        - CHANGE_SOURCE=${CHANGE_SOURCE}
+        - PHP_UPSTREAM_CONTAINER=${NGINX_PHP_UPSTREAM_CONTAINER}
+        - PHP_UPSTREAM_PORT=${NGINX_PHP_UPSTREAM_PORT}
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    volumes:
+      - ./nginx/log:/var/log/nginx
+      - ./nginx/sites:/etc/nginx/sites-available
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/static:/var/www/html/download
+    ports:
+      - "80:80"
+      - "443:443"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
+  mysql: 
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_VERSION=5.7
+    ports:
+      - "3306:3306"  
+    tty: true
+    environment:
+      - MYSQL_DATABASE=default
+      - MYSQL_USER=default
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=UTC
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/:/docker-entrypoint-initdb.d
+    networks:
+        - backend
+  redis: 
+    build:
+      context: ./redis
+      args:
+        - no_proxy
+    ports:
+      - "6379:6379"
+    tty: true
+    environment:
+      - ENV=test
+    networks:
+        - backend
