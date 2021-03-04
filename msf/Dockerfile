@@ -197,7 +197,7 @@ RUN cd $SRC_DIR \
     && make >/dev/null \
     && make install \
     && cd $SRC_DIR \
-    && wget -O yaml-2.0.2.tgz https://pecl.php.net/get/yaml-2.0.2.tgz \
+#    && wget -O yaml-2.0.2.tgz https://pecl.php.net/get/yaml-2.0.2.tgz \
     && tar xzf yaml-2.0.2.tgz \
     && cd yaml-2.0.2 \
     && $PHP_INSTALL_DIR/bin/phpize \
