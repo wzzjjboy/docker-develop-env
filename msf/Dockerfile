@@ -7,16 +7,17 @@ ENV HOME /home/worker
 ENV SRC_DIR $HOME/src
 RUN /usr/bin/mkdir -p ${SRC_DIR}
 #ADD src ${SRC_DIR}
+ADD pkg ${SRC_DIR}
 
-RUN export HTTP_PROXY=http://192.168.174.1:8020 \
-    && export HTTPS_PROXY=http://192.168.174.1:8020\
-    && export FTP_PROXY=http://192.168.174.1:8020
+#RUN export HTTP_PROXY=http://192.168.31.16:7890 \
+#    && export HTTPS_PROXY=http://192.168.31.16:7890\
+#    && export FTP_PROXY=http://192.168.31.16:7890
 
 # -----------------------------------------------------------------------------
 # Install Development tools
 # -----------------------------------------------------------------------------
 RUN rpm --import /etc/pki/rpm-gpg/RPM* \
-    && curl --silent --location https://raw.githubusercontent.com/nodesource/distributions/master/rpm/setup_6.x | bash - \
+#    && curl --silent --location https://raw.githubusercontent.com/nodesource/distributions/master/rpm/setup_6.x | bash - \
     && yum -y update \
     && yum groupinstall -y "Development tools" \
     && yum install -y gcc-c++ zlib-devel bzip2-devel openssl \
@@ -30,7 +31,7 @@ RUN rpm --import /etc/pki/rpm-gpg/RPM* \
 # -----------------------------------------------------------------------------
 ENV CURL_INSTALL_DIR ${HOME}/libcurl
 RUN cd ${SRC_DIR} \
-    && wget -O curl-7.55.1.tar.gz http://curl.askapache.com/download/curl-7.55.1.tar.gz \
+#    && wget -O curl-7.55.1.tar.gz http://curl.askapache.com/download/curl-7.55.1.tar.gz \
     && tar xzf curl-7.55.1.tar.gz \
     && cd curl-7.55.1 \
     && ./configure --prefix=${CURL_INSTALL_DIR} \
@@ -58,7 +59,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Chongqing /etc/localtime \
 # Install ImageMagick
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O ImageMagick.tar.gz https://www.imagemagick.org/download/ImageMagick.tar.gz \
+#    && wget -O ImageMagick.tar.gz https://www.imagemagick.org/download/ImageMagick.tar.gz \
     && tar zxf ImageMagick.tar.gz \
     && rm -rf ImageMagick.tar.gz \
     && ImageMagickPath=`ls` \
@@ -72,7 +73,7 @@ RUN cd ${SRC_DIR} \
 # Install hiredis
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O hiredis-0.13.3.tar.gz https://github.com/redis/hiredis/archive/v0.13.3.tar.gz \
+#    && wget -O hiredis-0.13.3.tar.gz https://github.com/redis/hiredis/archive/v0.13.3.tar.gz \
     && tar zxvf hiredis-0.13.3.tar.gz \
     && cd hiredis-0.13.3 \
     && make \
@@ -84,21 +85,21 @@ RUN cd ${SRC_DIR} \
 # -----------------------------------------------------------------------------
 # Install libmemcached using by php-memcached
 # -----------------------------------------------------------------------------
-#ENV LIB_MEMCACHED_INSTALL_DIR /usr/local/
-#RUN cd ${SRC_DIR} \
+ENV LIB_MEMCACHED_INSTALL_DIR /usr/local/
+RUN cd ${SRC_DIR} \
 #    && wget -O libmemcached-1.0.18.tar.gz https://launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz \
-#    && tar xzf libmemcached-1.0.18.tar.gz \
-#    && cd libmemcached-1.0.18 \
-#    && ./configure --prefix=$LIB_MEMCACHED_INSTALL_DIR --with-memcached 1>/dev/null \
-#    && make 1>/dev/null \
-#    && make install \
-#    && rm -rf ${SRC_DIR}/libmemcached*
+    && tar xzf libmemcached-1.0.18.tar.gz \
+    && cd libmemcached-1.0.18 \
+    && ./configure --prefix=$LIB_MEMCACHED_INSTALL_DIR --with-memcached 1>/dev/null \
+    && make 1>/dev/null \
+    && make install \
+    && rm -rf ${SRC_DIR}/libmemcached*
 
 # -----------------------------------------------------------------------------
 # Install libmcrypt using by php-mcrypt
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O libmcrypt-2.5.8.tar.gz https://nchc.dl.sourceforge.net/project/mcrypt/Libmcrypt/2.5.8/libmcrypt-2.5.8.tar.gz \
+#    && wget -O libmcrypt-2.5.8.tar.gz https://nchc.dl.sourceforge.net/project/mcrypt/Libmcrypt/2.5.8/libmcrypt-2.5.8.tar.gz \
     && tar xzf libmcrypt-2.5.8.tar.gz \
     && cd libmcrypt-2.5.8 \
     && ./configure 1>/dev/null \
@@ -113,7 +114,7 @@ RUN cd ${SRC_DIR} \
 # Install re2c for PHP
 # -----------------------------------------------------------------------------
 run cd $SRC_DIR \
-    && wget -O re2c-1.0.tar.gz https://excellmedia.dl.sourceforge.net/project/re2c/old/re2c-1.0.tar.gz \
+#    && wget -O re2c-1.0.tar.gz https://excellmedia.dl.sourceforge.net/project/re2c/old/re2c-1.0.tar.gz \
     && tar xzf re2c-1.0.tar.gz \
     && cd re2c-1.0 \
     && ./configure \
@@ -131,7 +132,7 @@ RUN cd ${SRC_DIR} \
     && yum install -y freetype-devel libevent libevent-devel libxml2 libxml2-devel ncurses ncurses-devel  openssl openssl-devel  libjpeg libjpeg-devel libpng libpng-devel zlib-devel  bzip2 bzip2-devel libmcrypt libmcrypt-devel openldap openldap-devel unixODBC unixODBC-devel libtool-ltdl libtool-ltdl-devel net-snmp-devel expat-devel libxslt-devel\
     && ls -l \
 #    && wget -O php-${phpversion}.tar.gz http://cn2.php.net/distributions/php-${phpversion}.tar.gz \
-    && wget -O php-${phpversion}.tar.gz http://download.alan.com/php-${phpversion}.tar.gz \
+#    && wget -O php-${phpversion}.tar.gz http://cn2.php.net/distributions/php-${phpversion}.tar.gz \
     && tar xzf php-${phpversion}.tar.gz \
     && cd php-${phpversion} \
     && ./configure \
@@ -189,7 +190,7 @@ RUN cd ${SRC_DIR} \
 # Install yaml and PHP yaml extension
 # -----------------------------------------------------------------------------
 RUN cd $SRC_DIR \
-    && wget -O yaml-0.1.7.tar.gz http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz \
+#    && wget -O yaml-0.1.7.tar.gz http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz \
     && tar xzf yaml-0.1.7.tar.gz \
     && cd yaml-0.1.7 \
     && ./configure --prefix=/usr/local \
@@ -209,7 +210,7 @@ RUN cd $SRC_DIR \
 # Install PHP mongodb extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O mongodb-1.3.2.tgz https://pecl.php.net/get/mongodb-1.3.2.tgz \
+#    && wget -O mongodb-1.3.2.tgz https://pecl.php.net/get/mongodb-1.3.2.tgz \
     && tar zxf mongodb-1.3.2.tgz \
     && cd mongodb-1.3.2 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -222,7 +223,7 @@ RUN cd ${SRC_DIR} \
 # Install amqp
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O rabbitmq-c-0.8.0.tar.gz  https://github.com/alanxz/rabbitmq-c/archive/v0.8.0.tar.gz \
+#    && wget -O rabbitmq-c-0.8.0.tar.gz  https://github.com/alanxz/rabbitmq-c/archive/v0.8.0.tar.gz \
     && tar zxf rabbitmq-c-0.8.0.tar.gz \
     && cd rabbitmq-c-0.8.0 \
     && autoreconf -i \
@@ -234,7 +235,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP amqp extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O amqp-1.9.3.tgz http://pecl.php.net/get/amqp-1.9.3.tgz \
+#    && wget -O amqp-1.9.3.tgz http://pecl.php.net/get/amqp-1.9.3.tgz \
     && tar zxvf amqp-1.9.3.tgz \
     && cd amqp-1.9.3 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -248,7 +249,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP redis extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O redis-3.1.3.tgz https://pecl.php.net/get/redis-3.1.3.tgz \
+#    && wget -O redis-3.1.3.tgz https://pecl.php.net/get/redis-3.1.3.tgz \
     && tar zxf redis-3.1.3.tgz \
     && cd redis-3.1.3 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -262,7 +263,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP imagick extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O imagick-3.4.3.tgz https://pecl.php.net/get/imagick-3.4.3.tgz \
+#    && wget -O imagick-3.4.3.tgz https://pecl.php.net/get/imagick-3.4.3.tgz \
     && tar zxf imagick-3.4.3.tgz \
     && cd imagick-3.4.3 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -277,7 +278,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP igbinary extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O igbinary-2.0.1.tgz https://pecl.php.net/get/igbinary-2.0.1.tgz \
+#    && wget -O igbinary-2.0.1.tgz https://pecl.php.net/get/igbinary-2.0.1.tgz \
     && tar zxf igbinary-2.0.1.tgz \
     && cd igbinary-2.0.1 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -291,7 +292,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP memcached extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O memcached-3.0.3.tgz https://pecl.php.net/get/memcached-3.0.3.tgz \
+#    && wget -O memcached-3.0.3.tgz https://pecl.php.net/get/memcached-3.0.3.tgz \
     && tar xzf memcached-3.0.3.tgz \
     && cd memcached-3.0.3 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -305,7 +306,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP yac extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O yac-2.0.2.tgz https://pecl.php.net/get/yac-2.0.2.tgz \
+#    && wget -O yac-2.0.2.tgz https://pecl.php.net/get/yac-2.0.2.tgz \
     && tar zxf yac-2.0.2.tgz\
     && cd yac-2.0.2 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -321,7 +322,7 @@ RUN cd ${SRC_DIR} \
 # -----------------------------------------------------------------------------
 ENV swooleVersion 1.9.22
 RUN cd ${SRC_DIR} \
-    && wget -O swoole-${swooleVersion}.tar.gz https://github.com/swoole/swoole-src/archive/v${swooleVersion}.tar.gz \
+#    && wget -O swoole-${swooleVersion}.tar.gz https://github.com/swoole/swoole-src/archive/v${swooleVersion}.tar.gz \
     && tar zxf swoole-${swooleVersion}.tar.gz \
     && cd swoole-src-${swooleVersion}/ \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -335,7 +336,7 @@ RUN cd ${SRC_DIR} \
 # Install PHP inotify extensions
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O inotify-2.0.0.tgz https://pecl.php.net/get/inotify-2.0.0.tgz \
+#    && wget -O inotify-2.0.0.tgz https://pecl.php.net/get/inotify-2.0.0.tgz \
     && tar zxf inotify-2.0.0.tgz \
     && cd inotify-2.0.0 \
     && ${PHP_INSTALL_DIR}/bin/phpize \
@@ -349,7 +350,7 @@ RUN cd ${SRC_DIR} \
 # Install phpunit
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O phpunit.phar https://phar.phpunit.de/phpunit.phar \
+#    && wget -O phpunit.phar https://phar.phpunit.de/phpunit.phar \
     && mv phpunit.phar ${PHP_INSTALL_DIR}/bin/phpunit \
     && chmod +x ${PHP_INSTALL_DIR}/bin/phpunit
 
@@ -357,7 +358,8 @@ RUN cd ${SRC_DIR} \
 # Install php composer
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && curl -sS https://getcomposer.org/installer | $PHP_INSTALL_DIR/bin/php \
+#    && curl -sS https://getcomposer.org/installer | $PHP_INSTALL_DIR/bin/php \
+    && $PHP_INSTALL_DIR/bin/php installer \
     && chmod +x composer.phar \
     && mv composer.phar ${PHP_INSTALL_DIR}/bin/composer
 
@@ -375,7 +377,7 @@ RUN cd ${PHP_INSTALL_DIR} \
 # Install jq
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-    && wget -O jq-1.5.tar.gz https://github.com/stedolan/jq/archive/jq-1.5.tar.gz \
+#    && wget -O jq-1.5.tar.gz https://github.com/stedolan/jq/archive/jq-1.5.tar.gz \
     && tar zxf jq-1.5.tar.gz \
     && cd jq-jq-1.5 \
     && ./configure --disable-maintainer-mode \
@@ -386,22 +388,22 @@ RUN cd ${SRC_DIR} \
 # -----------------------------------------------------------------------------
 # Install Apache ab
 # -----------------------------------------------------------------------------
-RUN cd ${HOME} \
-    && yum -y remove httpd \
-    && mkdir httpd \
-    && cd httpd \
-    && yumdownloader httpd-tools \
-    && rpm2cpio httpd-tools* | cpio -idmv \
-    && mkdir -p /home/worker/bin \
-    && mv ./usr/bin/ab /home/worker/bin \
-    && cd ${HOME} && rm -rf /home/worker/httpd
+#RUN cd ${HOME} \
+#    && yum -y remove httpd \
+#    && mkdir httpd \
+#    && cd httpd \
+#    && yumdownloader httpd-tools \
+#    && rpm2cpio httpd-tools* | cpio -idmv \
+#    && mkdir -p /home/worker/bin \
+#    && mv ./usr/bin/ab /home/worker/bin \
+#    && cd ${HOME} && rm -rf /home/worker/httpd
 
 # -----------------------------------------------------------------------------
 # Update Git
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
     && yum -y remove git subversion \
-    && wget -O git-2.14.1.tar.gz https://github.com/git/git/archive/v2.14.1.tar.gz \
+#    && wget -O git-2.14.1.tar.gz https://github.com/git/git/archive/v2.14.1.tar.gz \
     && tar zxf git-2.14.1.tar.gz \
     && cd git-2.14.1 \
     && make configure \
