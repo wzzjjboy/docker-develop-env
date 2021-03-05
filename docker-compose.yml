@@ -70,6 +70,7 @@ services:
         - INSTALL_INOTIFY=true
     volumes:
       - ./../:/var/www
+    working_dir: /var/www
     ports:
       - "8130:22"
       - "8131:80"

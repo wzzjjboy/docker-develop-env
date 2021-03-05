@@ -180,7 +180,7 @@ RUN cd ${SRC_DIR} \
        --with-curl=${CURL_INSTALL_DIR} \
        --with-mcrypt \
        --with-mhash \
-    && make 1>/dev/null \
+    && make  \
     && make install \
     && rm -rf ${PHP_INSTALL_DIR}/lib/php.ini \
     && cp -f php.ini-development ${PHP_INSTALL_DIR}/lib/php.ini \
@@ -312,6 +312,8 @@ RUN cd ${SRC_DIR} \
     && ${PHP_INSTALL_DIR}/bin/phpize \
     && ./configure --with-php-config=$PHP_INSTALL_DIR/bin/php-config \
     && make 1>/dev/null \
+
+
     && make install \
 
 
@@ -350,7 +352,7 @@ RUN cd ${SRC_DIR} \
 # Install phpunit
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-#    && wget -O phpunit.phar https://phar.phpunit.de/phpunit.phar \
+    && wget -O phpunit.phar https://phar.phpunit.de/phpunit.phar \
     && mv phpunit.phar ${PHP_INSTALL_DIR}/bin/phpunit \
     && chmod +x ${PHP_INSTALL_DIR}/bin/phpunit
 
@@ -366,18 +368,18 @@ RUN cd ${SRC_DIR} \
 # -----------------------------------------------------------------------------
 # Install PhpDocumentor
 # -----------------------------------------------------------------------------
-RUN $PHP_INSTALL_DIR/bin/pear install -a PhpDocumentor
-
-RUN cd ${PHP_INSTALL_DIR} \
-    && bin/php bin/composer self-update \
-    && bin/pear install PHP_CodeSniffer-2.3.4 \
-    && rm -rf /tmp/*
+#RUN $PHP_INSTALL_DIR/bin/pear install -a PhpDocumentor
+#
+#RUN cd ${PHP_INSTALL_DIR} \
+#    && bin/php bin/composer self-update \
+#    && bin/pear install PHP_CodeSniffer-2.3.4 \
+#    && rm -rf /tmp/*
 
 # -----------------------------------------------------------------------------
 # Install jq
 # -----------------------------------------------------------------------------
 RUN cd ${SRC_DIR} \
-#    && wget -O jq-1.5.tar.gz https://github.com/stedolan/jq/archive/jq-1.5.tar.gz \
+    && wget -O jq-1.5.tar.gz https://github.com/stedolan/jq/archive/jq-1.5.tar.gz \
     && tar zxf jq-1.5.tar.gz \
     && cd jq-jq-1.5 \
     && ./configure --disable-maintainer-mode \
@@ -412,22 +414,58 @@ RUN cd ${SRC_DIR} \
     && make install \
     && rm -rf $SRC_DIR/git-2*
 
+# -----------------------------------------------------------------------------
+# Devel libraries for delelopment tools like php & nginx ...
+# -----------------------------------------------------------------------------
+
+RUN yum -y install \
+    epel-release tar gzip bzip2 unzip file perl-devel perl-ExtUtils-Embed \
+    pcre openssh-server openssh sudo \
+    screen vim git telnet expat \
+    lemon net-snmp net-snmp-devel \
+    ca-certificates perl-CPAN m4 \
+    gd libjpeg libpng zlib libevent net-snmp net-snmp-devel \
+    net-snmp-libs freetype libtool-tldl libxml2 unixODBC \
+    libxslt libmcrypt freetds \
+    gd-devel libjpeg-devel libpng-devel zlib-devel \
+    freetype-devel libtool-ltdl libtool-ltdl-devel \
+    libxml2-devel zlib-devel bzip2-devel gettext-devel \
+    curl-devel gettext-devel libevent-devel \
+    libxslt-devel expat-devel unixODBC-devel \
+    openssl-devel libmcrypt-devel freetds-devel \
+    pcre-devel openldap openldap-devel libc-client-devel \
+    jemalloc jemalloc-devel inotify-tools nodejs apr-util yum-utils tree \
+    && ln -s /usr/lib64/libc-client.so /usr/lib/libc-client.so \
+    && rm -rf /var/cache/{yum,ldconfig}/* \
+    && rm -rf /etc/ld.so.cache \
+    && yum clean all
+
+# -----------------------------------------------------------------------------
+# Copy Config
+# -----------------------------------------------------------------------------
+ADD run.sh /
+ADD config /home/worker/
 
 # -----------------------------------------------------------------------------
 # Add user worker
 # -----------------------------------------------------------------------------
-#RUN useradd -M -u 1000 worker \
-#    && echo "worker" | passwd --stdin worker \
-#    && echo 'worker  ALL=(ALL)  NOPASSWD: ALL' > /etc/sudoers.d/worker \
-#    && sed -i \
-#        -e 's/^#PermitRootLogin yes/PermitRootLogin no/g' \
-#        -e 's/^PermitRootLogin yes/PermitRootLogin no/g' \
-#        -e 's/^#PermitUserEnvironment no/PermitUserEnvironment yes/g' \
-#        -e 's/^PermitUserEnvironment no/PermitUserEnvironment yes/g' \
-#        /etc/ssh/sshd_config \
-#    && chmod a+x /run.sh \
-#    && chmod a+x ${PHP_INSTALL_DIR}/bin/checkstyle \
-#    && chmod a+x ${PHP_INSTALL_DIR}/bin/mergeCoverReport
+RUN useradd -M -u 1000 worker \
+    && echo "worker" | passwd --stdin worker \
+    && echo 'worker  ALL=(ALL)  NOPASSWD: ALL' > /etc/sudoers.d/worker \
+    && sed -i \
+        -e 's/^#PermitRootLogin yes/PermitRootLogin no/g' \
+        -e 's/^PermitRootLogin yes/PermitRootLogin no/g' \
+        -e 's/^#PermitUserEnvironment no/PermitUserEnvironment yes/g' \
+        -e 's/^PermitUserEnvironment no/PermitUserEnvironment yes/g' \
+        /etc/ssh/sshd_config \
+    && chmod a+x /run.sh \
+    && chmod a+x ${PHP_INSTALL_DIR}/bin/checkstyle \
+    && chmod a+x ${PHP_INSTALL_DIR}/bin/mergeCoverReport
+
+# -----------------------------------------------------------------------------
+# install libmcrypt
+# -----------------------------------------------------------------------------
+RUN yum -y install epel-release libmcrypt libmcrypt-devel
 
 # -----------------------------------------------------------------------------
 # clean tmp file
@@ -439,4 +477,4 @@ RUN rm -rf /tmp/*
 
 EXPOSE 22 80 443
 WORKDIR /home/worker
-#CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D"]
