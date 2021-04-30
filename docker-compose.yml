@@ -81,6 +81,7 @@ services:
       - MSF_ENV=test-new
     networks:
         - backend
+
   yii2: 
     build:
       context: ./yii2
@@ -95,6 +96,7 @@ services:
       - ENV=test
     networks:
         - backend
+
   laravel: 
     build:
       context: ./laravel
@@ -109,6 +111,7 @@ services:
       - ENV=test
     networks:
         - backend
+
   nginx: 
     build:
       context: ./nginx
@@ -132,6 +135,7 @@ services:
       - ENV=test
     networks:
         - backend
+
   mysql: 
     build:
       context: ./mysql
@@ -151,6 +155,7 @@ services:
       - ./mysql/:/docker-entrypoint-initdb.d
     networks:
         - backend
+
   redis: 
     build:
       context: ./redis
@@ -163,3 +168,42 @@ services:
       - ENV=test
     networks:
         - backend
+
+  beanstalkd:
+    image: uretgec/beanstalkd-alpine
+    ports:
+      - "11300:11300"
+    #    volumes:
+    #      - ./beanstalkd/data:/data
+    networks:
+      - backend
+
+  beanstalkd2:
+    image: uretgec/beanstalkd-alpine
+    ports:
+      - "11301:11300"
+    networks:
+      - backend
+
+  swoole:
+    image: phpswoole/swoole:4.4.25-php7.2
+    ports:
+      - "50001-50099:50001-50099"
+    volumes:
+      - ./../:/var/www
+    working_dir: /var/www
+    tty: true
+
+  rabbitmq:
+    image: rabbitmq:3.8.3-management
+    container_name: rabbitmq
+    restart: "no"
+    hostname: myRabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
