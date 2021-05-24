@@ -12,6 +12,7 @@ services:
       - ./../:/mnt/d/htdocs
     ports:
       - "8110:9502"
+      - "8111:9503"
     tty: true
     environment:
       - ENV=test
@@ -207,3 +208,36 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: "no"
+    volumes:
+      # 将你的prometheus.yml文件放在当前文件同级下，或自定义
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      #- /home/prometheus/node_down.yml:/etc/prometheus/node_down.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana
+    restart: "no"
+#    volumes:
+      # 创建 etc目录，data目录存储grafana的数据
+#      - ./grafana/etc:/etc/grafana
+#      - ./grafana/data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+
+  node-exporter:
+    image: prom/node-exporter
+    restart: "no"
+    ports:
+      - "9100:9100"
+    networks:
+      - backend

@@ -1,0 +1,21 @@
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['0.0.0.0:9090']
+
+  - job_name: 'node'
+
+    # 注意这里的IP需要填写 node-exporter 容器的ip
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+
+  - job_name: 'skeleton'
+    # 这里填写的是宿主机的ip
+    static_configs:
+      - targets: ['docker-develop-env_hyperf_1:9502']

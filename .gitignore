@@ -1,5 +1,6 @@
 .idea
 conf.yaml
 mysql/data/*
+rabbitmq/data/*
 !.gitkeep
 go.sum
