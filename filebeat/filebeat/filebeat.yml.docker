@@ -1,0 +1,24 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+
+fields:
+  log_topic: log-collection
+
+# 输出到kafka
+output.kafka:
+  hosts: ["kafka1:9092"]
+  topic: '%{[fields.log_topic]}'
+  partition.round_robin:
+    reachable_only: false
+  required_acks: 1
+  keep_alive: 10s
+
+processors:
+  - add_cloud_metadata: ~

@@ -326,9 +326,22 @@ services:
   filebeat:
     image: elastic/filebeat:7.5.1
     container_name: filebeat
+    user: root
+    command: filebeat -e -strict.perms=false
+    labels:
+      - co.elastic.logs/enabled=false
     volumes:
-      -  ./filebeat/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      -  /home/alan/app/logs/dcache_rpc:/var/log/dcache_rpc
+      - ./filebeat/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/alan/app/logs/dcache_api:/var/log/dcache_api
+      - /home/alan/app/logs/dcache_rpc:/var/log/dcache_rpc
+      - /home/alan/app/logs/tax_equ_manage_api:/var/log/tax_equ_manage_api
+      - /home/alan/app/logs/tax_equ_manage_rpc:/var/log/tax_equ_manage_rpc
+      - /home/alan/app/logs/store_manage_api:/var/log/store_manage_api
+      - /home/alan/app/logs/store_manage_rpc:/var/log/store_manage_rpc
+      - /home/alan/app/logs/merchant_manage_rpc:/var/log/merchant_manage_rpc
+      - /home/alan/app/logs/cloud_service_rpc:/var/log/cloud_service_rpc
     networks:
       - backend
 

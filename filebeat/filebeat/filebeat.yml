@@ -1,12 +1,60 @@
 filebeat.inputs:
   - type: log
     enabled: true
-    # 开启json解析
     json.keys_under_root: true
     json.add_error_key: true
-    # 日志文件路径
+    tags: [ "dcache_api" ]
+    paths:
+      - /var/log/dcache_api/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "dcache_rpc" ]
     paths:
       - /var/log/dcache_rpc/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "cloud_service_rpc" ]
+    paths:
+      - /var/log/cloud_service_rpc/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "merchant_manage_rpc" ]
+    paths:
+      - /var/log/merchant_manage_rpc/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "store_manage_api" ]
+    paths:
+      - /var/log/store_manage_api/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "store_manage_rpc" ]
+    paths:
+      - /var/log/store_manage_rpc/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "tax_equ_manage_api" ]
+    paths:
+      - /var/log/tax_equ_manage_api/*.log
+  - type: log
+    enabled: true
+    json.keys_under_root: true
+    json.add_error_key: true
+    tags: [ "tax_equ_manage_rpc" ]
+    paths:
+      - /var/log/tax_equ_manage_rpc/*.log
 
 setup.template.settings:
   index.number_of_shards: 1
@@ -29,3 +77,4 @@ processors:
   - decode_json_fields:
       fields: ['@timestamp','level','content','trace','span','duration']
       target: ""
+      max_depth: 1
